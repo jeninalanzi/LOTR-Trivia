@@ -5,6 +5,7 @@ var unAnswered = 0;
 var arrayIndex = 0;
 
 var TimeoutId;
+var userChoice = true;
 
 
 
@@ -34,14 +35,14 @@ var triviaArray = [
         question:"Sauron gave Seven Rings to a particular race in Middle-Earth. Who were they?",
         answers: ["Men", "Dwarf-kings", "Hobbits", "Trolls"],
         correctAnswer: "Dwarf-kings",
-        image: "assets/images/frodo.gif",
+        image: "assets/images/dwarf.gif",
     },
 
     {
         question: "Aragorn's heritage lies in which country in Middle-earth?",
         answers: ["Rohan", "Rivendell", "Bree", "Gondor"],
         correctAnswer: "Gondor",
-        image: "assets/images/dwarf.gif",
+        image: "assets/images/aragorn.gif",
     },
 
     {
@@ -86,6 +87,8 @@ function displayQuestion() {
 
 
 
+
+
 function getQuestion() {
 
     // Counter decrement and console log.
@@ -98,20 +101,23 @@ function getQuestion() {
         stop();
         reset();
         alert("Sorry you've run out of time!")
-        arrayIndex++;
 
     // This will create new DIV to display the correct answer gif!
        var imageUrl = triviaArray[arrayIndex].image;
        var answerImage = $("<img>");
        answerImage.attr("src", imageUrl);
-       $("#quiz-area").html("<h2> The correct answer is: <br>" + triviaArray[arrayIndex].correctAnswer + "</h2>");
-       $("#quiz-area").append(answerImage);
+
+        $("#quiz-area").html("<h2> The correct answer is: <br>" + triviaArray[arrayIndex].correctAnswer + "</h2>");
+        $("#quiz-area").append(answerImage);
+
 
     // Increments the answers user did not answer:
        unAnswered++;
 
        clearTimeout(TimeoutId);
        TimeoutId = setTimeout(displayQuestion,3000);
+
+       arrayIndex++;
        
     };
 
@@ -130,25 +136,32 @@ function getQuestion() {
         // On-click event when the answer buttons are clicked.
         $(".possibleanswers").on("click", function() {
             clearTimeout(TimeoutId);
-            TimeoutId = setTimeout(displayQuestion,5000);
+            TimeoutId = setTimeout(displayQuestion,6000);
 
             // Check answer for wins/loss function now.
             var possibleAnswer = $(this).text();
             if(possibleAnswer === triviaArray[arrayIndex].correctAnswer) {
-                arrayIndex++;
+
+                userChoice = true;
                 alert("That is correct!");
                 rightAnswers++;
-
+                reset();
+                arrayIndex++;
 
             } else {
-                arrayIndex++;
+                userChoice = false;
                 alert("Sorry that is NOT correct!");
-                $("#quiz-area").empty();
-                $("#quiz-area").html("<h2> The correct answer is: <br>" + triviaArray[arrayIndex].correctAnswer + "</h2>");
-                $("#quiz-area").append(answerImage);
-                wrongAnswers++;
-
                 
+                wrongAnswers++;
+                    console.log(triviaArray[arrayIndex].correctAnswer); // This works now
+
+
+                setTimeout(displayCorrectAnswer,1000*5);
+                  
+
+
+                reset();
+                arrayIndex++;
             }
         });
 };
@@ -157,6 +170,26 @@ function stop() {
    clearInterval(intervalId);
    intervalId = setInterval(displayQuestion,1000);
 };
+
+function displayCorrectAnswer() {
+    $("#quiz-area").empty();
+    
+    if(counter === 0) {
+        var imageUrl = triviaArray[arrayIndex].image;
+        var showImage = $("<img>");
+        showImage.attr("src", imageUrl);
+
+        $("#quiz-area").append("<h2> The correct answer is: <br>" + triviaArray[arrayIndex].correctAnswer + "</h2>");
+        $("#quiz-area").append(showImage);
+    }
+    else if(userChoice === false) {
+        $("#quiz-area").append("<h2> The correct answer is: <br>" + triviaArray[arrayIndex].correctAnswer + "</h2>");
+        $("#quiz-area").append(showImage);
+    }
+};
+
+
+
 
 
 /* --- IMPORTANT!!! PLEASE READ ---
